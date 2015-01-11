@@ -1,9 +1,11 @@
-/* Copyright (C) 2000 MySQL AB
+#ifndef MYISAMPACK_INCLUDED
+#define MYISAMPACK_INCLUDED
+
+/* Copyright (c) 2000, 2011, Oracle and/or its affiliates. All rights reserved.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
+   the Free Software Foundation; version 2 of the License.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,7 +14,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
+   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
 /*
   Storing of values in high byte first order.
@@ -232,8 +234,9 @@
 #define mi_sizekorr(T)      mi_uint8korr(T)
 #else
 #define mi_sizestore(T,A)   { if ((A) == HA_OFFSET_ERROR)\
-                                bfill((char*) (T), 8, 255);\
+                                memset((T), 255, 8);\
                               else { mi_int4store((T), 0);\
                                      mi_int4store(((T) + 4), A); }}
 #define mi_sizekorr(T)      mi_uint4korr((uchar*) (T) + 4)
 #endif
+#endif /* MYISAMPACK_INCLUDED */

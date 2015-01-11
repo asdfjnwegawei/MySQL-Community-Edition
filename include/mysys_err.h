@@ -1,9 +1,8 @@
-/* Copyright (C) 2000 MySQL AB
+/* Copyright (c) 2000, 2010, Oracle and/or its affiliates. All rights reserved.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
+   the Free Software Foundation; version 2 of the License.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,22 +11,29 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
+   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
 #ifndef _mysys_err_h
 #define _mysys_err_h
+
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
-#define GLOB		0	/* Error maps */
-#define GLOBERRS	28	/* Max number of error messages in map's */
-#define EE(X)	globerrs[ X ]	/* Defines to add error to right map */
+#define GLOBERRS (EE_ERROR_LAST - EE_ERROR_FIRST + 1) /* Nr of global errors */
+#define EE(X)    (globerrs[(X) - EE_ERROR_FIRST])
 
-extern const char * NEAR globerrs[];	/* my_error_messages is here */
+extern const char *globerrs[];  /* my_error_messages is here */
 
 /* Error message numbers in global map */
-#define EE_FILENOTFOUND		0
+/*
+  Do not add error numbers before EE_ERROR_FIRST.
+  If necessary to add lower numbers, change EE_ERROR_FIRST accordingly.
+
+  We start with error 1 to not confuse peoples with 'error 0'
+*/
+
+#define EE_ERROR_FIRST          1 /*Copy first error nr.*/
 #define EE_CANTCREATEFILE	1
 #define EE_READ			2
 #define EE_WRITE		3
@@ -54,6 +60,14 @@ extern const char * NEAR globerrs[];	/* my_error_messages is here */
 #define EE_CANT_SYMLINK		25
 #define EE_REALPATH		26
 #define EE_SYNC			27
+#define EE_UNKNOWN_COLLATION	28
+#define EE_FILENOTFOUND		29
+#define EE_FILE_NOT_CLOSED	30
+#define EE_CHANGE_OWNERSHIP     31
+#define EE_CHANGE_PERMISSIONS   32
+#define EE_CANT_SEEK            33
+#define EE_ERROR_LAST           33 /* Copy last error nr */
+/* Add error numbers before EE_ERROR_LAST and change it accordingly. */
 
   /* exit codes for all MySQL programs */
 
@@ -69,6 +83,7 @@ extern const char * NEAR globerrs[];	/* my_error_messages is here */
 #define EXIT_NO_PTR_TO_VARIABLE		10
 #define EXIT_CANNOT_CONNECT_TO_SERVICE	11
 #define EXIT_OPTION_DISABLED            12
+#define EXIT_ARGUMENT_INVALID           13
 
 
 #ifdef	__cplusplus

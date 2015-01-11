@@ -1,9 +1,8 @@
-/* Copyright (C) 2000 MySQL AB
+/* Copyright (c) 2000, 2011, Oracle and/or its affiliates. All rights reserved.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
+   the Free Software Foundation; version 2 of the License.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,7 +11,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
+   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
 /* Prototypes when using thr_alarm library functions */
 
@@ -24,11 +23,6 @@ extern "C" {
 
 #ifndef USE_ALARM_THREAD
 #define USE_ONE_SIGNAL_HAND		/* One must call process_alarm */
-#endif
-#ifdef HAVE_LINUXTHREADS
-#define THR_CLIENT_ALARM SIGALRM
-#else
-#define THR_CLIENT_ALARM SIGUSR1
 #endif
 #ifdef HAVE_rts_threads
 #undef USE_ONE_SIGNAL_HAND
@@ -47,7 +41,7 @@ typedef struct st_alarm_info
 
 void thr_alarm_info(ALARM_INFO *info);
 
-#if defined(DONT_USE_THR_ALARM) || !defined(THREAD)
+#if defined(DONT_USE_THR_ALARM)
 
 #define USE_ALARM_THREAD
 #undef USE_ONE_SIGNAL_HAND
@@ -70,15 +64,7 @@ typedef my_bool ALARM;
 #if defined(__WIN__)
 typedef struct st_thr_alarm_entry
 {
-  rf_SetTimer crono;
-} thr_alarm_entry;
-
-#elif defined(__EMX__) || defined(OS2)
-
-typedef struct st_thr_alarm_entry
-{
-  uint crono;
-  uint event;
+  UINT_PTR crono;
 } thr_alarm_entry;
 
 #else /* System with posix threads */
@@ -95,20 +81,24 @@ typedef struct st_alarm {
   ulong expire_time;
   thr_alarm_entry alarmed;		/* set when alarm is due */
   pthread_t thread;
+  my_thread_id thread_id;
   my_bool malloced;
 } ALARM;
+
+extern uint thr_client_alarm;
+extern pthread_t alarm_thread;
 
 #define thr_alarm_init(A) (*(A))=0
 #define thr_alarm_in_use(A) (*(A)!= 0)
 void init_thr_alarm(uint max_alarm);
 void resize_thr_alarm(uint max_alarms);
 my_bool thr_alarm(thr_alarm_t *alarmed, uint sec, ALARM *buff);
-void thr_alarm_kill(pthread_t thread_id);
+void thr_alarm_kill(my_thread_id thread_id);
 void thr_end_alarm(thr_alarm_t *alarmed);
 void end_thr_alarm(my_bool free_structures);
 sig_handler process_alarm(int);
 #ifndef thr_got_alarm
-bool thr_got_alarm(thr_alarm_t *alrm);
+my_bool thr_got_alarm(thr_alarm_t *alrm);
 #endif
 
 
